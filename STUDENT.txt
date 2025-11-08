@@ -1,0 +1,2 @@
+APP_URL=https://gussakah00.github.io/cerita-di-sekitarmu
+MAP_SERVICE_API_KEY=not_required_for_leaflet

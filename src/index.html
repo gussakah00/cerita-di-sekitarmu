@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cerita di Sekitarmu</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#87CEEB" />
+    <meta
+      name="description"
+      content="Aplikasi berbagi cerita berbasis lokasi oleh gussakah"
+    />
+    <meta name="author" content="gussakah" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="public/images/favicon.png" />
+
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="public/images/logo.png" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles/styles.css" as="style" />
+    <link rel="preload" href="app.bundle.js" as="script" />
+
+    <!-- Leaflet CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+  </head>
+  <body>
+    <a
+      href="#main-content"
+      class="skip-link"
+      aria-label="Lewati ke Konten Utama"
+      >Lewati ke Konten Utama</a
+    >
+
+    <header>
+      <div class="main-header container">
+        <a class="brand-name" href="#/beranda">Cerita di Sekitarmu</a>
+
+        <nav id="navigation-drawer" class="navigation-drawer">
+          <ul id="nav-list" class="nav-list">
+            <!-- Navigation will be populated by navigation.js -->
+          </ul>
+        </nav>
+
+        <button
+          id="drawer-button"
+          class="drawer-button"
+          aria-label="Toggle navigation menu"
+        >
+          ☰
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content" class="main-content" tabindex="-1"></main>
+
+    <!-- PWA Installation Prompt -->
+    <div id="install-prompt" class="install-prompt" style="display: none">
+      <div class="install-content">
+        <p>
+          Pasang aplikasi Cerita di Sekitarmu untuk pengalaman yang lebih baik!
+        </p>
+        <button id="install-btn" class="primary-button">Pasang Aplikasi</button>
+        <button id="dismiss-install" class="secondary-button">Nanti</button>
+      </div>
+    </div>
+
+    <script src="./app.bundle.js"></script>
+
+    <!-- PWA Installation Script -->
+    <script>
+      let deferredPrompt;
+
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+
+        const installPrompt = document.getElementById("install-prompt");
+        if (installPrompt) {
+          installPrompt.style.display = "block";
+        }
+
+        const installBtn = document.getElementById("install-btn");
+        if (installBtn) {
+          installBtn.addEventListener("click", async () => {
+            if (deferredPrompt) {
+              deferredPrompt.prompt();
+              const { outcome } = await deferredPrompt.userChoice;
+              console.log(`User response to the install prompt: ${outcome}`);
+              deferredPrompt = null;
+
+              if (installPrompt) {
+                installPrompt.style.display = "none";
+              }
+            }
+          });
+        }
+
+        const dismissBtn = document.getElementById("dismiss-install");
+        if (dismissBtn) {
+          dismissBtn.addEventListener("click", () => {
+            if (installPrompt) {
+              installPrompt.style.display = "none";
+            }
+          });
+        }
+      });
+
+      window.addEventListener("appinstalled", () => {
+        console.log("PWA was installed");
+        deferredPrompt = null;
+      });
+    </script>
+  </body>
+</html>
