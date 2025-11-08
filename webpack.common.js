@@ -1,7 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
 
 module.exports = {
   entry: {
@@ -17,9 +16,6 @@ module.exports = {
       {
         test: /\.(png|jpe?g|gif)$/i,
         type: "asset/resource",
-        generator: {
-          filename: "images/[name][ext]",
-        },
       },
     ],
   },
@@ -27,7 +23,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: "index.html",
       template: path.resolve(__dirname, "src/index.html"),
-      favicon: path.resolve(__dirname, "src/public/images/favicon.png"),
     }),
     new CopyWebpackPlugin({
       patterns: [
@@ -36,19 +31,10 @@ module.exports = {
           to: path.resolve(__dirname, "dist/public/"),
         },
         {
-          from: path.resolve(__dirname, "src/sw.js"),
-          to: path.resolve(__dirname, "dist/"),
-        },
-        {
-          from: path.resolve(__dirname, "src/manifest.json"),
+          from: path.resolve(__dirname, "sw.js"),
           to: path.resolve(__dirname, "dist/"),
         },
       ],
-    }),
-    new WorkboxWebpackPlugin.InjectManifest({
-      swSrc: path.resolve(__dirname, "src/sw.js"),
-      swDest: "sw.js",
-      exclude: [/\.map$/, /manifest\.json$/, /_redirects/],
     }),
   ],
 };

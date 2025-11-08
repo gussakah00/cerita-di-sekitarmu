@@ -1,7 +1,7 @@
 class AuthService {
   constructor() {
-    this.tokenKey = "authToken";
-    this.userKey = "userData";
+    this.tokenKey = "token";
+    this.userKey = "user";
   }
 
   login(token, userData) {
@@ -12,10 +12,6 @@ class AuthService {
   logout() {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-  }
-
-  isLoggedIn() {
-    return !!this.getToken();
   }
 
   getToken() {
@@ -29,7 +25,11 @@ class AuthService {
 
   getUserName() {
     const user = this.getUser();
-    return user ? user.name : "Pengguna";
+    return user ? user.name : "User";
+  }
+
+  isLoggedIn() {
+    return !!this.getToken();
   }
 }
 

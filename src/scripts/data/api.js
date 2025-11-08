@@ -1,4 +1,4 @@
-import { authService } from "../utils/auth.js";
+import { authService } from "../../utils/auth.js";
 
 const API_BASE = "https://story-api.dicoding.dev/v1";
 
@@ -6,10 +6,6 @@ function getAuthToken() {
   return authService.getToken();
 }
 
-/**
- * Fetch stories dengan token dari auth service
- * @returns {Promise<Array>}
- */
 export async function fetchStoriesWithToken() {
   const token = getAuthToken();
 
@@ -31,33 +27,19 @@ export async function fetchStoriesWithToken() {
 
     const json = await response.json();
 
-    console.log("🔍 DEBUG - Full API Response:", json);
-
     if (json.error || !json.listStory) {
       console.error("API returned error:", json.message);
       return [];
     }
 
-    const storiesWithCorrectName = json.listStory.map((story) => {
-      return {
-        id: story.id,
-        name: story.name,
-        description: story.description,
-        photoUrl: story.photoUrl,
-        lat: story.lat,
-        lon: story.lon,
-        createdAt: story.createdAt,
-      };
-    });
-
-    return storiesWithCorrectName;
+    return json.listStory;
   } catch (error) {
     console.error("Error fetching stories:", error);
     return [];
   }
 }
 
-export async function postStory({ description, photo, lat, lon }) {
+export async function postStory(data) {
   const token = getAuthToken();
 
   if (!token) {
@@ -67,19 +49,11 @@ export async function postStory({ description, photo, lat, lon }) {
     };
   }
 
-  if (!description || !photo) {
-    return {
-      error: true,
-      message: "Deskripsi dan foto harus diisi.",
-    };
-  }
-
   const formData = new FormData();
-  formData.append("description", description);
-  formData.append("photo", photo);
-
-  if (lat) formData.append("lat", lat);
-  if (lon) formData.append("lon", lon);
+  formData.append("description", data.description);
+  formData.append("photo", data.photo);
+  if (data.lat) formData.append("lat", data.lat);
+  if (data.lon) formData.append("lon", data.lon);
 
   try {
     const response = await fetch(`${API_BASE}/stories`, {
@@ -93,7 +67,6 @@ export async function postStory({ description, photo, lat, lon }) {
     const json = await response.json();
 
     if (!response.ok || json.error) {
-      console.error("API Error while posting story:", json.message);
       return {
         error: true,
         message: json.message || `Status ${response.status}`,
@@ -102,7 +75,6 @@ export async function postStory({ description, photo, lat, lon }) {
 
     return json;
   } catch (error) {
-    console.error("Post Network Error:", error);
     return {
       error: true,
       message: "Gagal mengirim data karena masalah jaringan.",
